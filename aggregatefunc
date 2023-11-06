@@ -1,0 +1,550 @@
+test> use pict
+switched to db pict
+pict> db.agg.insertMany([{rollno:10,regno:121,name:'Aditya',dept:"CS",marks:[100,120,130]},{rollno:13,regno:130,name:"Atharva",dept:"IT",marks:[109,78,98]},{regno:90,rollno:104,name:"Inam",dept:"CS",marks:[87,46,107]}])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("6548e09363044b5eb68ddb70"),
+    '1': ObjectId("6548e09363044b5eb68ddb71"),
+    '2': ObjectId("6548e09363044b5eb68ddb72")
+  }
+}
+pict> db.agg.find()
+[
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb70"),
+    rollno: 10,
+    regno: 121,
+    name: 'Aditya',
+    dept: 'CS',
+    marks: [ 100, 120, 130 ]
+  },
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb71"),
+    rollno: 13,
+    regno: 130,
+    name: 'Atharva',
+    dept: 'IT',
+    marks: [ 109, 78, 98 ]
+  },
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb72"),
+    regno: 90,
+    rollno: 104,
+    name: 'Inam',
+    dept: 'CS',
+    marks: [ 87, 46, 107 ]
+  }
+]
+pict> db.agg.insertOne{regno:90,rollno:198,marks:[100,100,98],dept:"IT",name:"KNJ"}
+Uncaught:
+SyntaxError: Missing semicolon. (1:16)
+
+> 1 | db.agg.insertOne{regno:90,rollno:198,marks:[100,100,98],dept:"IT",name:"KNJ"}
+    |                 ^
+  2 |
+
+pict> db.agg.insertOne({regno:90,rollno:198,marks:[100,100,98],dept:"IT",name:"KNJ"})
+{
+  acknowledged: true,
+  insertedId: ObjectId("6548e13063044b5eb68ddb73")
+}
+pict> db.agg.update({regno:90},{$set:{name:"Kaustubh"}})
+DeprecationWarning: Collection.update() is deprecated. Use updateOne, updateMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+pict> db.agg.find()
+[
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb70"),
+    rollno: 10,
+    regno: 121,
+    name: 'Aditya',
+    dept: 'CS',
+    marks: [ 100, 120, 130 ]
+  },
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb71"),
+    rollno: 13,
+    regno: 130,
+    name: 'Atharva',
+    dept: 'IT',
+    marks: [ 109, 78, 98 ]
+  },
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb72"),
+    regno: 90,
+    rollno: 104,
+    name: 'Kaustubh',
+    dept: 'CS',
+    marks: [ 87, 46, 107 ]
+  },
+  {
+    _id: ObjectId("6548e13063044b5eb68ddb73"),
+    regno: 90,
+    rollno: 198,
+    marks: [ 100, 100, 98 ],
+    dept: 'IT',
+    name: 'KNJ'
+  }
+]
+pict> db.agg.count()
+DeprecationWarning: Collection.count() is deprecated. Use countDocuments or estimatedDocumentCount.
+4
+pict> db.agg.find().count()
+4
+pict> db.agg.insertOne({regno:94,rollno:148,marks:[10,10,9],dept:"CS",name:"ManishJ",gun:{80,10,21})
+Uncaught:
+SyntaxError: Unexpected token (1:86)
+
+> 1 | db.agg.insertOne({regno:94,rollno:148,marks:[10,10,9],dept:"CS",name:"ManishJ",gun:{80,10,21})
+    |                                                                                       ^
+  2 |
+
+pict> db.agg.insertOne({
+...   regno: 94,
+...   rollno: 148,
+...   marks: [10, 10, 9],
+...   dept: "CS",
+...   name: "ManishJ",
+...   gun: { field1: 80, field2: 10, field3: 21 }
+... })
+{
+  acknowledged: true,
+  insertedId: ObjectId("6548e23d63044b5eb68ddb74")
+}
+pict> db.agg.find().count()
+5
+pict> db.agg.find({'dept'},{unique:true})
+Uncaught:
+SyntaxError: Unexpected token (1:19)
+
+> 1 | db.agg.find({'dept'},{unique:true})
+    |                    ^
+  2 |
+
+pict> db.agg.find({'dept':"CS"},{unique:true})
+[
+  { _id: ObjectId("6548e09363044b5eb68ddb70") },
+  { _id: ObjectId("6548e09363044b5eb68ddb72") },
+  { _id: ObjectId("6548e23d63044b5eb68ddb74") }
+]
+pict> db.agg.find({'dept':"CS"},{unique:true}).count()
+3
+pict> db.agg.find({'dept':"CS"},{unique:true}).pretty()
+[
+  { _id: ObjectId("6548e09363044b5eb68ddb70") },
+  { _id: ObjectId("6548e09363044b5eb68ddb72") },
+  { _id: ObjectId("6548e23d63044b5eb68ddb74") }
+]
+pict> db.agg.find({'name':"Atharva"})
+[
+  {
+    _id: ObjectId("6548e09363044b5eb68ddb71"),
+    rollno: 13,
+    regno: 130,
+    name: 'Atharva',
+    dept: 'IT',
+    marks: [ 109, 78, 98 ]
+  }
+]
+pict> db.agg.find({'name':"Atharva"}).explain("executionStats")
+{
+  explainVersion: '2',
+  queryPlanner: {
+    namespace: 'pict.agg',
+    indexFilterSet: false,
+    parsedQuery: { name: { '$eq': 'Atharva' } },
+    queryHash: '1AD872C6',
+    planCacheKey: 'C190A5AC',
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    winningPlan: {
+      queryPlan: {
+        stage: 'COLLSCAN',
+        planNodeId: 1,
+        filter: { name: { '$eq': 'Atharva' } },
+        direction: 'forward'
+      },
+      slotBasedPlan: {
+        slots: '$$RESULT=s5 env: { s7 = "Atharva", s2 = Nothing (SEARCH_META), s3 = 1699275980100 (NOW), s1 = TimeZoneDatabase(Africa/Freetown...America/Port_of_Spain) (timeZoneDB) }',
+        stages: '[1] filter {traverseF(s4, lambda(l1.0) { ((l1.0 == s7) ?: false) }, false)} \n' +
+          '[1] scan s5 s6 none none none none lowPriority [s4 = name] @"d913caa9-f429-45fc-af10-8d9d2c1bc8da" true false '
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 2,
+    totalKeysExamined: 0,
+    totalDocsExamined: 5,
+    executionStages: {
+      stage: 'filter',
+      planNodeId: 1,
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      opens: 1,
+      closes: 1,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      numTested: 5,
+      filter: 'traverseF(s4, lambda(l1.0) { ((l1.0 == s7) ?: false) }, false) ',
+      inputStage: {
+        stage: 'scan',
+        planNodeId: 1,
+        nReturned: 5,
+        executionTimeMillisEstimate: 0,
+        opens: 1,
+        closes: 1,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        numReads: 5,
+        recordSlot: 5,
+        recordIdSlot: 6,
+        fields: [ 'name' ],
+        outputSlots: [ Long("4") ]
+      }
+    }
+  },
+  command: { find: 'agg', filter: { name: 'Atharva' }, '$db': 'pict' },
+  serverInfo: {
+    host: 'DESKTOP-9UKVCTH',
+    port: 27017,
+    version: '7.0.2',
+    gitVersion: '02b3c655e1302209ef046da6ba3ef6749dd0b62a'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeEngine'
+  },
+  ok: 1
+}
+pict> db.agg.createIndex({roll:1})
+roll_1
+pict> db.agg.showIndexes()
+TypeError: db.agg.showIndexes is not a function
+pict> db.agg.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { roll: 1 }, name: 'roll_1' }
+]
+pict> db.agg.find({'name':"Atharva"}).explain("executionStats")
+{
+  explainVersion: '2',
+  queryPlanner: {
+    namespace: 'pict.agg',
+    indexFilterSet: false,
+    parsedQuery: { name: { '$eq': 'Atharva' } },
+    queryHash: '1AD872C6',
+    planCacheKey: '3503DAFA',
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    winningPlan: {
+      queryPlan: {
+        stage: 'COLLSCAN',
+        planNodeId: 1,
+        filter: { name: { '$eq': 'Atharva' } },
+        direction: 'forward'
+      },
+      slotBasedPlan: {
+        slots: '$$RESULT=s5 env: { s7 = "Atharva", s2 = Nothing (SEARCH_META), s3 = 1699276152118 (NOW), s1 = TimeZoneDatabase(Africa/Freetown...America/Port_of_Spain) (timeZoneDB) }',
+        stages: '[1] filter {traverseF(s4, lambda(l1.0) { ((l1.0 == s7) ?: false) }, false)} \n' +
+          '[1] scan s5 s6 none none none none lowPriority [s4 = name] @"d913caa9-f429-45fc-af10-8d9d2c1bc8da" true false '
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 1,
+    totalKeysExamined: 0,
+    totalDocsExamined: 5,
+    executionStages: {
+      stage: 'filter',
+      planNodeId: 1,
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      opens: 1,
+      closes: 1,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      numTested: 5,
+      filter: 'traverseF(s4, lambda(l1.0) { ((l1.0 == s7) ?: false) }, false) ',
+      inputStage: {
+        stage: 'scan',
+        planNodeId: 1,
+        nReturned: 5,
+        executionTimeMillisEstimate: 0,
+        opens: 1,
+        closes: 1,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        numReads: 5,
+        recordSlot: 5,
+        recordIdSlot: 6,
+        fields: [ 'name' ],
+        outputSlots: [ Long("4") ]
+      }
+    }
+  },
+  command: { find: 'agg', filter: { name: 'Atharva' }, '$db': 'pict' },
+  serverInfo: {
+    host: 'DESKTOP-9UKVCTH',
+    port: 27017,
+    version: '7.0.2',
+    gitVersion: '02b3c655e1302209ef046da6ba3ef6749dd0b62a'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeEngine'
+  },
+  ok: 1
+}
+pict> db.agg.dropIndex(roll_1)
+ReferenceError: roll_1 is not defined
+pict> db.agg.dropIndex('roll_1')
+{ nIndexesWas: 2, ok: 1 }
+pict> db.agg.distinct({rollno})
+ReferenceError: rollno is not defined
+pict> db.agg.distinct({'rollno'})
+Uncaught:
+SyntaxError: Unexpected token (1:25)
+
+> 1 | db.agg.distinct({'rollno'})
+    |                          ^
+  2 |
+
+pict> db.agg.distinct('rollno')
+[ 10, 13, 104, 148, 198 ]
+pict> db.agg.aggregate({$unwind:'$marks'},{"_id":'$rollno',"total_marks":{$sum:'$marks'}})
+MongoServerError: A pipeline stage specification object must contain exactly one field.
+pict> db.agg.aggregate([{$unwind:'$marks'},{"_id":'$rollno',"total_marks":{$sum:'$marks'}}])
+MongoServerError: A pipeline stage specification object must contain exactly one field.
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{"_id":'$rollno',"total_marks":{$sum:'$marks'}}}])
+[
+  { _id: 13, total_marks: 285 },
+  { _id: 10, total_marks: 350 },
+  { _id: 198, total_marks: 298 },
+  { _id: 148, total_marks: 29 },
+  { _id: 104, total_marks: 240 }
+]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$sum:'$marks'}])
+MongoServerError: Unrecognized pipeline stage name: '$sum'
+pict> db.agg.aggregate([{$unwind:'$marks'},{'Total_ADDITION':{$sum:'$marks'}}])
+MongoServerError: Unrecognized pipeline stage name: 'Total_ADDITION'
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{'Total_ADDITION':{$sum:'$marks'}}}])
+MongoServerError: a group specification must include an _id
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{'Id':'null','ADDITION':{$sum:'$marks'}}}])
+MongoServerError: The field 'Id' must be an accumulator object
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{'_id':'null','ADDITION':{$sum:'$marks'}}}])
+[ { _id: 'null', ADDITION: 1202 } ]
+pict> db.agg.aggregate([{$unwind:$marks},{$group:{'_id':'null','ADDITION':{$sum:'$marks'}}}])
+ReferenceError: $marks is not defined
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:'null','ADDITION':{$sum:'$marks'}}}])
+[ { _id: 'null', ADDITION: 1202 } ]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:'null',ADDITION:{$sum:'$marks'}}}])
+[ { _id: 'null', ADDITION: 1202 } ]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:-1}])
+Uncaught:
+SyntaxError: Unterminated string constant. (1:78)
+
+> 1 | db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:-1}])
+    |                                                                               ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:{"TOTAL_SUM":-1}}])
+Uncaught:
+SyntaxError: Unterminated string constant. (1:78)
+
+> 1 | db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:{"TOTAL_SUM":-1}}])
+    |                                                                               ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:$marks}}},{$sort:{"TOTAL_SUM":-1}}])
+ReferenceError: $marks is not defined
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks'}}},{$sort:{"TOTAL_SUM":-1}}])
+[
+  { _id: 10, TOTAL_SUM: 350 },
+  { _id: 198, TOTAL_SUM: 298 },
+  { _id: 13, TOTAL_SUM: 285 },
+  { _id: 104, TOTAL_SUM: 240 },
+  { _id: 148, TOTAL_SUM: 29 }
+]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks'}}},{$sort:{"TOTAL_SUMs":-1}}])
+[
+  { _id: 13, TOTAL_SUM: 285 },
+  { _id: 10, TOTAL_SUM: 350 },
+  { _id: 198, TOTAL_SUM: 298 },
+  { _id: 148, TOTAL_SUM: 29 },
+  { _id: 104, TOTAL_SUM: 240 }
+]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks'}}},{$sort:{"TOTAL_SUM":-1}}])
+[
+  { _id: 10, TOTAL_SUM: 350 },
+  { _id: 198, TOTAL_SUM: 298 },
+  { _id: 13, TOTAL_SUM: 285 },
+  { _id: 104, TOTAL_SUM: 240 },
+  { _id: 148, TOTAL_SUM: 29 }
+]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks'}}},{$sort:{"TOTAL_SUM":1}}])
+[
+  { _id: 148, TOTAL_SUM: 29 },
+  { _id: 104, TOTAL_SUM: 240 },
+  { _id: 13, TOTAL_SUM: 285 },
+  { _id: 198, TOTAL_SUM: 298 },
+  { _id: 10, TOTAL_SUM: 350 }
+]
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{_id:'rollno',"dept":"CS",'TOTAL':{$sum:'$marks'}}}])
+MongoServerError: unknown operator: $sum
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{_id:'rollno',"dept":"CS",'TOTAL':{$sum:'$marks'}}}])
+MongoServerError: unknown operator: $sum
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"rollno",'total':{$sum:'$marks'}}}])
+[ { _id: 'rollno', total: 619 } ]
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}}}])
+[
+  { _id: 148, total: 29 },
+  { _id: 10, total: 350 },
+  { _id: 104, total: 240 }
+]
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}}}])
+Uncaught:
+SyntaxError: Unexpected token (1:108)
+
+> 1 | db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}}}])
+    |                                                                                                             ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}}}])
+Uncaught:
+SyntaxError: Unexpected token (1:108)
+
+> 1 | db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}}}])
+    |                                                                                                             ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}
+}])
+Uncaught:
+SyntaxError: Unexpected token (1:108)
+
+> 1 | db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}},{$sort:{'total':-1}}])
+    |                                                                                                             ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",total:{$sum:'$marks'}},{$sort:{total:-1}}])
+Uncaught:
+SyntaxError: Unexpected token (1:106)
+
+> 1 | db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",total:{$sum:'$marks'}},{$sort:{total:-1}}])
+    |                                                                                                           ^
+  2 |
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",total:{$sum:'$marks'}}},{$sort:{total:-1}}])
+
+[
+  { _id: 10, total: 350 },
+  { _id: 104, total: 240 },
+  { _id: 148, total: 29 }
+]
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{"dept":"CS"}},{$group:{_id:"$rollno",'total':{$sum:'$marks'}}},{$sort:{'total':-1}}])
+[
+  { _id: 10, total: 350 },
+  { _id: 104, total: 240 },
+  { _id: 148, total: 29 }
+]
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"rollno",'Departm':'$dept','Total':{$sum:'$marks'}}},{$sort:{Total:-1}},{$limit:1}])
+MongoServerError: The field 'Departm' must be an accumulator object
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"rollno",'Departm':'$dept','Total':{$sum:'$marks'}}},{$sort:{Total:-1}},{$limit:1}])
+MongoServerError: The field 'Departm' must be an accumulator object
+pict> db.agg.aggregate([
+...   { $unwind: '$marks' },
+...   {
+...     $group: {
+...       _id: "$rollno",
+...       Departm: { $first: "$dept" },
+...       Total: { $sum: '$marks' }
+...     }
+...   },
+...   { $sort: { Total: -1 } },
+...   { $limit: 1 }
+... ])
+[ { _id: 10, Departm: 'CS', Total: 350 } ]
+
+pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:'$dept',Total:{$sum:'$marks'}}},{$sort:{Total:-1}},{$limit:1}])
+[ { _id: 'CS', Total: 619 } ]
+
+pict> db.agg.aggregate([{$unwind:'$marks'},{$match:{dept:"CS"}},{$group:{_id:'null',Total:{$sum:'$marks'}}},{$sort:{Total:-1}},{$limit:1}])
+[ { _id: 'null', Total: 619 } ]
+
+
+    
+
+pict> db.agg.aggregate([{$unwind:'$marks'},{$match:{dept:"CS"}},{$group:{_id:'$rollno',Total:{$sum:'$marks'}}},{$sort:{Total:-1}},{$limit:1}])
+[ { _id: 10, Total: 350 } ]
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{dept:"IT"}},{$group:{_id:"rollno",total:{$sum:'$marks'}}},{$sort:{total:-1}},{$limit:1}])
+[ { _id: 'rollno', total: 583 } ]
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{dept:"IT"}},{$group:{_id:"$rollno",total:{$sum:'$marks'}}},{$sort:{total:-1}},{$limit:1}])
+[ { _id: 198, total: 298 } ]
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$match:{dept:"IT"}},{$group:{_id:"$rollno",total:{$sum:'$marks'}}}])
+[ { _id: 198, total: 298 }, { _id: 13, total: 285 } ]
+
+pict> db.agg.aggregate([{$unwind:"$marks"},{$group:{_id:"$rollno",Total:{$sum:'$marks'}}},{$sort:{Total:-1}}])
+[
+  { _id: 10, Total: 350 },
+  { _id: 198, Total: 298 },
+  { _id: 13, Total: 285 },
+  { _id: 104, Total: 240 },
+  { _id: 148, Total: 29 }
+]
+pict> db.agg.aggregate([
+...   { $unwind: '$marks' },
+...   {
+...     $group: {
+...       _id: "$rollno",
+...       Departm: { $first: "$dept" },
+...       Total: { $sum: '$marks' }
+...     }
+...   },
+...   { $sort: { Total: -1 } },
+...   { $limit: 1 }
+... ])
+[ { _id: 10, Departm: 'CS', Total: 350 } ]
+pict> db.agg.aggregate([ { $unwind: '$marks' }, { $group: { _id: "$rollno", Departm: { $first: "$dept" }, Total: { $sum: '$marks' } } }, { $sort: { Total: -1 } }] )
+[
+  { _id: 10, Departm: 'CS', Total: 350 },
+  { _id: 198, Departm: 'IT', Total: 298 },
+  { _id: 13, Departm: 'IT', Total: 285 },
+  { _id: 104, Departm: 'CS', Total: 240 },
+  { _id: 148, Departm: 'CS', Total: 29 }
+]
+pict>
