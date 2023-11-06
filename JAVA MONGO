@@ -1,0 +1,76 @@
+package mong;
+import java.util.*;
+import com.mongodb.*;
+public class mongoo {
+	public static void main(String args[])
+	{
+		String key,value;
+		try {
+			MongoClient mong=new MongoClient("127.0.0.1",27017);
+			DB db=mong.getDB("local");
+			DBCollection collection=db.getCollection("students");
+			while(true) {
+			System.out.println("1.Enter data");
+			System.out.println("2.Read data");
+			System.out.println("3.Delete data");
+			System.out.println("4.Exit");
+			System.out.println("Enter a choice");
+			Scanner sc=new Scanner(System.in);
+			int choice=sc.nextInt();
+			switch(choice)
+			{
+			case 1:
+			
+				BasicDBObject object= new BasicDBObject();
+				System.out.println("Enter key");
+				key=sc.next();
+				System.out.println("Enter value");
+				value=sc.next();
+				object.put(key,value);
+				collection.insert(object);
+				break;
+			
+			case 2:
+				DBCursor cursor = collection.find();
+				while(cursor.hasNext())
+				{
+					System.out.println(cursor.next());
+				}
+				break;
+			case 3:
+				BasicDBObject object2= new BasicDBObject();
+				System.out.println("Enter key");
+				key=sc.next();
+				System.out.println("Enter value");
+				value=sc.next();
+				object2.put(key, value);
+				collection.remove(object2);
+				break;
+			case 4:
+				mong.close();
+				System.exit(0);
+			case 5:
+				BasicDBObject obj1 = new BasicDBObject();
+				System.out.println("Enter key");
+				key=sc.next();
+				System.out.println("Enter value");
+				value=sc.next();
+				obj1.put(key,value);
+				BasicDBObject ob1=new BasicDBObject();
+				System.out.println("Enter key");
+				key=sc.next();
+				System.out.println("Enter value");
+				value=sc.next();
+				ob1.put(key,value);
+				collection.update(obj1, ob1);
+				
+			}
+			
+		}} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e);
+		}
+	}
+
+}
+
