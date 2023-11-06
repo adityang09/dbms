@@ -332,15 +332,7 @@ pict> db.agg.dropIndex(roll_1)
 ReferenceError: roll_1 is not defined
 pict> db.agg.dropIndex('roll_1')
 { nIndexesWas: 2, ok: 1 }
-pict> db.agg.distinct({rollno})
-ReferenceError: rollno is not defined
-pict> db.agg.distinct({'rollno'})
-Uncaught:
-SyntaxError: Unexpected token (1:25)
 
-> 1 | db.agg.distinct({'rollno'})
-    |                          ^
-  2 |
 
 pict> db.agg.distinct('rollno')
 [ 10, 13, 104, 148, 198 ]
@@ -372,24 +364,7 @@ pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:'null','ADDITION':{$sum:
 [ { _id: 'null', ADDITION: 1202 } ]
 pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:'null',ADDITION:{$sum:'$marks'}}}])
 [ { _id: 'null', ADDITION: 1202 } ]
-pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:-1}])
-Uncaught:
-SyntaxError: Unterminated string constant. (1:78)
 
-> 1 | db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:-1}])
-    |                                                                               ^
-  2 |
-
-pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:{"TOTAL_SUM":-1}}])
-Uncaught:
-SyntaxError: Unterminated string constant. (1:78)
-
-> 1 | db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks}}},{$sort:{"TOTAL_SUM":-1}}])
-    |                                                                               ^
-  2 |
-
-pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:$marks}}},{$sort:{"TOTAL_SUM":-1}}])
-ReferenceError: $marks is not defined
 pict> db.agg.aggregate([{$unwind:'$marks'},{$group:{_id:"$rollno","TOTAL_SUM":{$sum:'$marks'}}},{$sort:{"TOTAL_SUM":-1}}])
 [
   { _id: 10, TOTAL_SUM: 350 },
